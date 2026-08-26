@@ -63,14 +63,27 @@ tests/                    unit (Vitest) and e2e (Playwright)
 
 ## Current state
 
-Phase 0 and **M-03** only. The `src/` tree is a compiling skeleton: the router, shell
-and state store are real, the five view modules render their Arabic headings, and the
-outbox, cache and Supabase-config contracts are fixed and unit-tested. Everything else
-is a documented stub naming the ticket that fills it.
+Phase 0 complete (**M-00**, **M-02**) plus **M-03**.
 
-The product's own markup, CSS and behaviour are **not here yet** — **M-00** imports the
-live `index.html`, and **M-04**/**M-05** move its styles and scripts into this tree
-without changing a single rule or behaviour.
+`index.html` at the root **is the product** — the real single-file app, Arabic RTL, five
+views, inline CSS and JS, Supabase over jsDelivr. `npm run build` emits it, so the web
+build is shippable today. The pristine pre-rename original is kept at
+`docs/baseline/index.upstream.html`; see [`docs/baseline/README.md`](docs/baseline/README.md)
+for the one-line check that the product name is its only difference.
+
+The `src/` tree is a compiling skeleton and is **not in the bundle yet** — the product
+file does not reference it. It is typechecked, linted and unit-tested on every run, but
+`vite build` will not include it until **M-05** moves the product's JS into it and
+rewires the entry. The router, shell and state store are real; the five view modules
+render their Arabic headings; the outbox, cache and Supabase-config contracts are fixed
+and unit-tested. Everything else is a documented stub naming the ticket that fills it.
+
+**M-04** and **M-05** are next: move the `:root` block and the inline scripts out of
+`index.html` into `src/`, changing no rule and no behaviour.
+
+Two decisions are open and recorded in
+[`docs/programme/DOCUMENT-CONTROL.md`](docs/programme/DOCUMENT-CONTROL.md): the
+production domain (blocks M-09 and M-22) and the store audience (blocks Phase 7).
 
 ## Non-negotiables
 
