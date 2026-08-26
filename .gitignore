@@ -1,0 +1,32 @@
+node_modules/
+dist/
+dist-ssr/
+coverage/
+.vite/
+
+# Secrets — never commit. Publishable client key only, via .env.example.
+.env
+.env.*
+!.env.example
+
+# Capacitor build output (the ios/ and android/ projects themselves are committed)
+ios/App/build/
+ios/App/Pods/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.keystore
+*.jks
+
+# Test output
+playwright-report/
+test-results/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json
