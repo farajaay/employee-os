@@ -1,0 +1,18 @@
+/*
+  Design tokens.
+
+  M-04 copies the `:root` custom property block from the current single-file
+  `index.html` into this file VERBATIM. Not "cleaned up", not renamed, not
+  re-ordered — copied. The Done when criterion is that no computed style differs
+  from the screenshots in `docs/baseline/`.
+
+  The three values below are the brand constants named in the programme, present
+  so the scaffold has a background to paint. M-04 replaces this whole block with
+  the real one.
+*/
+
+:root {
+  --bg: #fbf7f2;
+  --rose: #a46b75;
+  --ink: #2c2627;
+}

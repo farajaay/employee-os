@@ -1,0 +1,10 @@
+/*
+  Component rules. M-04 fills this from the current `index.html`, changing no rule.
+
+  M-14 raises every interactive target to a 44 pt minimum — several current buttons
+  are below it. M-15 replaces blocking spinners with skeleton loaders.
+*/
+
+.app-nav a.is-active {
+  color: var(--rose);
+}

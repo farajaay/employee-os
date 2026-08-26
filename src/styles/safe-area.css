@@ -1,0 +1,17 @@
+/*
+  Safe-area insets — M-14.
+
+  Every fixed element must respect `env(safe-area-inset-*)` so nothing sits under
+  the notch or the home indicator. `viewport-fit=cover` is already set in
+  `index.html`, which is what makes these variables resolve to non-zero values.
+
+  M-14 applies these to the real fixed chrome. The fallbacks below keep the
+  declarations valid on browsers without the env() function.
+*/
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}

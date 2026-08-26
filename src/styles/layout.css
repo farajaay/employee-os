@@ -1,0 +1,15 @@
+/*
+  Shell layout. M-04 fills this from the current `index.html`.
+
+  M-13 adds the breakpoint: sidebar at >= 900 px, five bottom tabs below it.
+  Until then the nav is a plain row and the view host is a plain block.
+*/
+
+.app-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.app-view {
+  display: block;
+}

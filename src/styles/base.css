@@ -1,0 +1,21 @@
+/*
+  Element defaults. M-04 fills this from the current `index.html`, changing no rule.
+*/
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  margin: 0;
+}
+
+/*
+  Latin-script inputs stay left-to-right inside the right-to-left interface.
+  This is already the behaviour today. Keep it — M-15 verifies it.
+*/
+input[type='email'],
+input[type='password'] {
+  direction: ltr;
+}

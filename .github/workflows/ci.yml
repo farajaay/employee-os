@@ -1,0 +1,47 @@
+name: CI
+
+# M-37 completes this: adds the Playwright E2E job and makes the workflow a
+# required check that blocks merge. Release workflows are M-38 (Android) and
+# M-39 (iOS).
+
+on:
+  push:
+    branches: [main, 'feat/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: No secrets in the bundle
+        run: |
+          if grep -rIlE 'service_role|SUPABASE_SERVICE_ROLE|BEGIN [A-Z ]*PRIVATE KEY' dist; then
+            echo "::error::A secret-looking string reached the build output."
+            exit 1
+          fi
+
+      - name: No Supabase queries under src/features (M-08)
+        run: |
+          if grep -rn 'supabase\.from(' src/features 2>/dev/null; then
+            echo "::error::Move this query into src/data/repositories/ (M-08)."
+            exit 1
+          fi
