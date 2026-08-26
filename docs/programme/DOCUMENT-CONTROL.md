@@ -53,3 +53,14 @@ would be a defect:
 |---|---|
 | `'مساء الخير فاطمة'` | A personal greeting addressing the owner by name. Not the product name. |
 | `owner_label: 'Fatimah'` (×3) | A **data value** written into `tasks` rows. Changing it would alter what is written to the production database and split new rows from every existing one. |
+
+## Blocked
+
+| # | Blocked item | Blocker | Needs |
+|---|---|---|---|
+| B-1 | **M-01** — tag `v0-web-baseline` pushed | This session's git proxy rejects `refs/tags/*` while accepting `refs/heads/*`. Four retries, annotated and lightweight both; `git ls-remote --tags` stays empty. No tag- or release-creation tool is exposed on the GitHub MCP server either. | The tag created on `95234f8` from a machine with normal git access, or via the GitHub UI (Releases → new tag on `95234f8`). |
+| B-2 | **M-01** — the 15 baseline screenshots | The app is fully login-gated: `showAuth()` keeps `#app` hidden until Supabase returns a session, so only the auth screen renders. 3 of 15 captured. | A demo account. `BASELINE_EMAIL=... BASELINE_PASSWORD=... npm run baseline`. The same account Apple needs for the M-40 review notes — creating it now settles two tickets at once. |
+
+Both block **M-04**, whose *Done when* is "no computed style differs from
+`docs/baseline/`". That is unverifiable for the five views while twelve of them are
+missing.
