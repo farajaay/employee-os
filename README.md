@@ -1,12 +1,20 @@
 # Employee OS
 
+**A mobile app programme.** The deliverable is a signed iOS binary on the App Store and
+a signed Android binary on Google Play — not a website.
+
 A personal creative-professional work operating system. Arabic, right-to-left, five
 product areas: اليوم (Today) · المشاريع (Projects) · Workflow · Event Radar · Career.
 
-This repository takes the product from a single-file static web app to a store-published
-mobile application: **Vite + TypeScript → installable PWA → Capacitor iOS/Android →
-App Store + Google Play.** The backend is an existing Supabase project (Auth + Postgres +
-RLS + Storage) whose contract does not change.
+The route there runs through the web, because Capacitor packages a folder of compiled
+web assets and there is nothing to hand Xcode or Gradle until a bundler exists:
+
+**single-file site → Vite + TypeScript → installable PWA → Capacitor iOS/Android →
+App Store + Google Play.**
+
+The web build stays shippable throughout — it is a live product — but it is the means,
+not the end. The backend is an existing Supabase project (Auth + Postgres + RLS +
+Storage) whose contract does not change.
 
 Issued as programme **FWO-MOB-001 Rev.0** under the earlier product name *Fatimah Work OS*.
 See [`docs/programme/REV-NOTES.md`](docs/programme/REV-NOTES.md) for what the rename did and

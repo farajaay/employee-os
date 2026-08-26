@@ -5,6 +5,29 @@ The work plan is in `MOBILE_BUILD_PLAN.md`. Work **one ticket at a time**.
 
 ---
 
+## This is a mobile app programme
+
+**The deliverable is a signed iOS binary on the App Store and a signed Android binary
+on Google Play.** Not a website. Not a web app with a mobile layout.
+
+The web build is the *means*, not the end. Capacitor packages a folder of compiled web
+assets, so a bundler has to exist before there is anything to hand Xcode or Gradle —
+that is the only reason Phases 1 and 2 look web-shaped. A ticket is not judged by
+whether the site works; it is judged by whether it moves a store-ready binary closer.
+
+Two consequences that bind every ticket:
+
+- **A web view wrapped in a binary is rejected under App Store Guideline 4.2.** The
+  native capabilities in Phase 6 — push, camera, biometric lock, native share, secure
+  session storage — are a *requirement*, not polish.
+- **Design and verify for the phone first.** 390 pt, one-handed, Arabic RTL, real
+  devices. A change that only ever gets checked in a desktop browser is not verified.
+  The sign-off matrix is iPhone SE, iPhone 15 Pro, a mid-range Android and one tablet.
+
+If a decision would be right for a website and wrong for an app, it is wrong.
+
+---
+
 ## What this project is
 
 A personal creative-professional work operating system. Arabic, right-to-left,
