@@ -30,6 +30,11 @@ jobs:
         run: npm test
 
       - name: Build
+        # Publishable client values only — never a service-role key. Vercel
+        # supplies the real ones; CI just needs the build to resolve them.
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_ci_placeholder
         run: npm run build
 
       # M-04 guarantee: the split stylesheets must stay byte-identical to the
@@ -38,10 +43,23 @@ jobs:
       - name: CSS parity with the v0 baseline (M-04)
         run: npm run verify:css
 
+      # Proves the app's JS actually loads and wires up, and that nothing is
+      # fetched from a third-party host at runtime (M-06). Supabase calls are
+      # intercepted locally, so no request reaches production.
+      - name: Runtime smoke test
+        run: npm run smoke
+
       - name: No secrets in the bundle
         run: |
-          if grep -rIlE 'service_role|SUPABASE_SERVICE_ROLE|BEGIN [A-Z ]*PRIVATE KEY' dist; then
+          if grep -rIlE 'service_role|sb_secret|SUPABASE_SERVICE_ROLE|BEGIN [A-Z ]*PRIVATE KEY' dist; then
             echo "::error::A secret-looking string reached the build output."
+            exit 1
+          fi
+
+      - name: No third-party CDN references in the bundle (M-06)
+        run: |
+          if grep -rIlE 'cdn\.jsdelivr\.net|unpkg\.com|cdnjs\.cloudflare\.com' dist; then
+            echo "::error::A CDN reference reached the build output. The app must not depend on one at runtime."
             exit 1
           fi
 

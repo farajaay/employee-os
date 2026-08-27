@@ -71,3 +71,22 @@ all. The three reachable screens were also pixel-compared at zero tolerance.
 B-2 still blocks **M-01** itself, and the twelve view screenshots remain the right
 regression reference for **M-13**, **M-14** and **M-15**, where layout genuinely
 changes and rule identity is no longer the question.
+
+## Operational — required before this branch reaches production
+
+**Vercel must carry the Supabase env vars before `feat/mobile-app` is merged or
+deployed.** M-06 removed the hardcoded URL and key from `index.html`; the build now
+reads them from the environment and Vite inlines them at build time. A production
+build without them throws `MissingSupabaseConfigError` and the app will not start.
+
+| Variable | Value |
+|---|---|
+| `VITE_SUPABASE_URL` | the existing project URL, unchanged |
+| `VITE_SUPABASE_ANON_KEY` | the existing **publishable** (`sb_publishable_…`) key, unchanged |
+
+Publishable client values only. A service-role key in a `VITE_` variable is shipped to
+every user and is a total compromise of the database. CI guards the build output
+against `service_role` and `sb_secret` strings.
+
+Neither value is secret and neither changed — the same pair that was hardcoded in the
+deployed `index.html`, and still present in `docs/baseline/index.upstream.html`.
