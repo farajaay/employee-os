@@ -1,10 +1,9 @@
-/*
-  Component rules. M-04 fills this from the current `index.html`, changing no rule.
+/* Shared components: the auth screen and the .btn family.
 
-  M-14 raises every interactive target to a 44 pt minimum — several current buttons
-  are below it. M-15 replaces blocking spinners with skeleton loaders.
+   M-04 split the original inline <style> into files. Rules are byte-identical
+   and in their ORIGINAL ORDER; the files are linked from index.html in the same
+   order. Cascade order is load-bearing here — equal-specificity ties resolve by
+   source order, so never reorder these files or move a rule between them.
+   Verify with: node scripts/verify-css-parity.mjs
 */
-
-.app-nav a.is-active {
-  color: var(--rose);
-}
+.auth{position:fixed;inset:0;z-index:1000;background:var(--bg);overflow:auto}.authWrap{max-width:980px;margin:auto;min-height:100dvh;display:grid;grid-template-columns:1.05fr .75fr;background:var(--paper)}.authHero{padding:70px 54px;display:flex;flex-direction:column;justify-content:center;background:#fff9f5;border-left:1px solid var(--line)}.monogram{font:italic 64px/1 var(--serif);color:var(--rose);position:relative;width:max-content}.monogram:after{content:"✦";position:absolute;font:16px/1 Georgia;color:var(--gold);right:-12px;top:2px}.authHero h1{font:500 clamp(48px,6vw,78px)/1.03 var(--serif);margin:26px 0 18px}.authHero p{font-size:16px;line-height:1.9;color:var(--muted);max-width:520px}.authFormWrap{padding:50px 42px;display:flex;align-items:center}.authForm{width:100%;border-top:2px solid var(--rose);padding-top:22px}.authForm h2{font:600 30px/1.2 var(--serif);margin:0 0 24px}.authForm label{display:block;font-size:11px;color:var(--muted);direction:ltr;text-align:left;margin:0 0 7px}.authForm input{width:100%;height:52px;border:1px solid #d9cbc5;background:#fff;border-radius:12px;padding:0 14px;font-size:16px;direction:ltr;text-align:left;margin-bottom:16px;outline:none}.authForm input:focus{border-color:var(--rose);box-shadow:0 0 0 3px #a46b7518}.authBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:1px solid #d8c9c2;background:#fffdf9;color:var(--ink);min-height:46px;border-radius:12px;padding:10px 14px;font-weight:700}.btn.primary{background:var(--rose);border-color:var(--rose);color:#fff}.btn.small{min-height:36px;padding:7px 10px;font-size:11px}.authMsg{min-height:22px;margin-top:14px;font-size:12px;line-height:1.6;color:var(--danger)}.authNote{font-size:11px;line-height:1.8;color:var(--muted);margin-top:16px}

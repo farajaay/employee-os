@@ -25,7 +25,7 @@ import { chromium } from '@playwright/test';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'docs', 'baseline');
-const DIST = join(ROOT, 'dist', 'index.html');
+// dist/ is served in full by serveDist().
 
 /** The five product views, in sidebar order. */
 const VIEWS = [
@@ -42,11 +42,39 @@ const WIDTHS = [390, 768, 1440];
 const email = process.env.BASELINE_EMAIL;
 const password = process.env.BASELINE_PASSWORD;
 
+const MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.webmanifest': 'application/manifest+json'
+};
+
+/**
+ * Serve the whole dist/ directory. It must be a real static server, not a
+ * one-file stub: once M-04 moved the CSS out of the inline <style> block, a
+ * server that answered every request with index.html handed the browser HTML
+ * where it asked for a stylesheet, and the page rendered completely unstyled.
+ */
 async function serveDist() {
-  const html = await readFile(DIST);
-  const server = createServer((_req, res) => {
-    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-    res.end(html);
+  const root = join(ROOT, 'dist');
+  const server = createServer(async (req, res) => {
+    const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    const file = path === '/' ? join(root, 'index.html') : join(root, path);
+    if (!file.startsWith(root)) {
+      res.writeHead(403).end();
+      return;
+    }
+    try {
+      const body = await readFile(file);
+      const ext = file.slice(file.lastIndexOf('.'));
+      res.writeHead(200, { 'content-type': MIME[ext] ?? 'application/octet-stream' });
+      res.end(body);
+    } catch {
+      res.writeHead(404).end('not found');
+    }
   });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   return { server, url: `http://127.0.0.1:${server.address().port}/` };

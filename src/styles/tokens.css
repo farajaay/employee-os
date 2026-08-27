@@ -1,18 +1,11 @@
-/*
-  Design tokens.
+/* Design tokens — the :root custom properties, copied VERBATIM from the
+   single-file index.html at M-04. Do not rename, reorder or "tidy" these.
 
-  M-04 copies the `:root` custom property block from the current single-file
-  `index.html` into this file VERBATIM. Not "cleaned up", not renamed, not
-  re-ordered — copied. The Done when criterion is that no computed style differs
-  from the screenshots in `docs/baseline/`.
-
-  The three values below are the brand constants named in the programme, present
-  so the scaffold has a background to paint. M-04 replaces this whole block with
-  the real one.
+   M-04 split the original inline <style> into files. Rules are byte-identical
+   and in their ORIGINAL ORDER; the files are linked from index.html in the same
+   order. Cascade order is load-bearing here — equal-specificity ties resolve by
+   source order, so never reorder these files or move a rule between them.
+   Verify with: node scripts/verify-css-parity.mjs
 */
 
-:root {
-  --bg: #fbf7f2;
-  --rose: #a46b75;
-  --ink: #2c2627;
-}
+:root{--bg:#fbf7f2;--paper:#fffdf9;--ink:#2c2627;--muted:#81736d;--line:#eadfd9;--rose:#a46b75;--rose2:#c99a9b;--blush:#f2dfda;--gold:#c5a06b;--green:#75856f;--warn:#b2763c;--danger:#a45b61;--dark:#342b2e;--serif:Didot,"Bodoni 72",Georgia,serif}

@@ -1,15 +1,9 @@
-/*
-  Shell layout. M-04 fills this from the current `index.html`.
+/* App shell: .app, .top, .layout, .side, .nav, .main, .view.
 
-  M-13 adds the breakpoint: sidebar at >= 900 px, five bottom tabs below it.
-  Until then the nav is a plain row and the view host is a plain block.
+   M-04 split the original inline <style> into files. Rules are byte-identical
+   and in their ORIGINAL ORDER; the files are linked from index.html in the same
+   order. Cascade order is load-bearing here — equal-specificity ties resolve by
+   source order, so never reorder these files or move a rule between them.
+   Verify with: node scripts/verify-css-parity.mjs
 */
-
-.app-nav {
-  display: flex;
-  gap: 1rem;
-}
-
-.app-view {
-  display: block;
-}
+.app{min-height:100dvh}.top{position:sticky;top:0;z-index:40;background:#fbf7f2ef;backdrop-filter:blur(15px);border-bottom:1px solid var(--line);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px}.top h1{font:600 25px/1.1 var(--serif);margin:4px 0 0}.sync{font-size:10px;color:var(--muted);display:flex;gap:7px;align-items:center}.dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}.dot.ok{background:var(--green)}.topActions{display:flex;gap:8px;align-items:center}.who{font-size:9px;color:var(--muted);direction:ltr}.layout{display:grid;grid-template-columns:190px minmax(0,1fr)}.side{position:sticky;top:79px;height:calc(100dvh - 79px);border-left:1px solid var(--line);padding:24px 16px;background:#fffaf6}.sideBrand{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:18px}.sideBrand b{font:500 21px/1.1 var(--serif);letter-spacing:.08em}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;padding:12px;border-radius:10px;text-align:right;color:#82746f;font-weight:650}.nav button.active{background:#f2e5e1;color:var(--rose)}.nav button span{font-size:9px;margin-left:8px;color:#b8a69e}.main{padding:30px;max-width:1320px;width:100%;margin:auto}.view{display:none}.view.active{display:block}

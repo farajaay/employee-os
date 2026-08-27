@@ -12,6 +12,7 @@
     "test:e2e": "playwright test",
     "lint": "eslint src --max-warnings 0",
     "baseline": "npm run build && node scripts/capture-baseline.mjs",
+    "verify:css": "node scripts/verify-css-parity.mjs",
     "sync": "npm run build && npx cap sync",
     "ios": "npm run sync && npx cap open ios",
     "android": "npm run sync && npx cap open android",

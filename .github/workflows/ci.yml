@@ -32,6 +32,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      # M-04 guarantee: the split stylesheets must stay byte-identical to the
+      # original inline <style> block, in its original cascade order. M-05 and
+      # every later ticket inherit this check.
+      - name: CSS parity with the v0 baseline (M-04)
+        run: npm run verify:css
+
       - name: No secrets in the bundle
         run: |
           if grep -rIlE 'service_role|SUPABASE_SERVICE_ROLE|BEGIN [A-Z ]*PRIVATE KEY' dist; then

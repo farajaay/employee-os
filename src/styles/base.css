@@ -1,21 +1,10 @@
-/*
-  Element defaults. M-04 fills this from the current `index.html`, changing no rule.
+/* Element defaults and generic utilities: the reset, html/body, form-control
+   inheritance, .hidden/.serif/.muted/.eyebrow.
+
+   M-04 split the original inline <style> into files. Rules are byte-identical
+   and in their ORIGINAL ORDER; the files are linked from index.html in the same
+   order. Cascade order is load-bearing here — equal-specificity ties resolve by
+   source order, so never reorder these files or move a rule between them.
+   Verify with: node scripts/verify-css-parity.mjs
 */
-
-html {
-  background: var(--bg);
-  color: var(--ink);
-}
-
-body {
-  margin: 0;
-}
-
-/*
-  Latin-script inputs stay left-to-right inside the right-to-left interface.
-  This is already the behaviour today. Keep it — M-15 verifies it.
-*/
-input[type='email'],
-input[type='password'] {
-  direction: ltr;
-}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;-webkit-text-size-adjust:100%}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}.serif{font-family:var(--serif)}.muted{color:var(--muted)}.eyebrow{font-size:10px;letter-spacing:.16em;color:#a08374;font-weight:700}
