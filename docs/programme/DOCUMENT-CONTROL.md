@@ -11,6 +11,7 @@ decision closes; do not delete a row.
 | D-1 | Product name: **Employee OS** (from *Fatimah Work OS*) | **Closed** | 26 Aug 2026 | — |
 | D-2 | Production domain — stays `fatimah-work-os.vercel.app`, moves to `employee-os.vercel.app`, or moves to a custom domain | **OPEN** | — | M-09, M-22 |
 | D-3 | Audience — public App Store listing, TestFlight-only, or Apple Business Manager custom app | **OPEN** | — | Phase 7, M-40 |
+| D-4 | The `F` monogram — keep it, or change it to `E` for Employee OS | **OPEN** | — | M-10, M-21 |
 
 ### D-2 — production domain (open)
 
@@ -28,6 +29,20 @@ It must be settled **before M-09** (Vercel build configuration) and **before M-2
 
 Moving it after the app is live in either store is materially more expensive than
 moving it now. Recorded as open at the owner's instruction.
+
+### D-4 — the monogram (open)
+
+The interface and the app icons are built on an italic serif **`F`**. It stood for
+*Fatimah*; under *Employee OS* it stands for nothing. Keeping it is defensible — it is
+the established mark and the guardrails forbid redesigning the visual language on the
+agent's own initiative.
+
+It needs an answer before **M-10** generates the PWA icon set and **M-21** generates
+the native icons and splash, because both derive from it and both are then baked into
+store listings and installed home screens. Changing it later means regenerating every
+icon and re-uploading both listings.
+
+M-10 proceeds on the existing `F` — the reversible choice.
 
 ### D-3 — audience (open)
 
@@ -54,6 +69,16 @@ would be a defect:
 |---|---|
 | `'مساء الخير فاطمة'` | A personal greeting addressing the owner by name. Not the product name. |
 | `owner_label: 'Fatimah'` (×3) | A **data value** written into `tasks` rows. Changing it would alter what is written to the production database and split new rows from every existing one. |
+| `<h1>FATIMAH AHMED ALI BOHASSAN</h1>` in the Career Vault CV | The owner's **real name on their own CV**. Not the product name. Renaming it would be a serious defect. |
+| The `F` monogram (auth hero and sidebar) | A design element, not a text label. The guardrails forbid redesigning the visual language, and M-10 derives the app icons from this exact monogram. Changing it to `E` is a branding decision for the owner — see D-4. |
+
+### Corrected after the fact
+
+**M-00 missed the sidebar brand.** The sidebar rendered the product name as
+`<b>FATIMAH</b>` + `<div class="eyebrow">WORK OS</div>` — split across two elements,
+so M-00's exact-phrase replacement of `Fatimah Work OS` never matched it. It read
+"FATIMAH / WORK OS" in the running app for three commits. Now `EMPLOYEE` / `OS`,
+preserving the original element structure. Found while reviewing the markup at M-10.
 
 ## Blocked
 
