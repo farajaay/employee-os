@@ -49,6 +49,11 @@ jobs:
       - name: Runtime smoke test
         run: npm run smoke
 
+      # M-10: manifest fields, icon sizes, the iOS meta tags Safari needs, and a
+      # service worker that activates and serves the shell offline.
+      - name: PWA installability (M-10)
+        run: npm run verify:pwa
+
       - name: No secrets in the bundle
         run: |
           if grep -rIlE 'service_role|sb_secret|SUPABASE_SERVICE_ROLE|BEGIN [A-Z ]*PRIVATE KEY' dist; then
