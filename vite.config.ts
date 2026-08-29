@@ -44,12 +44,40 @@ export default defineConfig({
         ]
       },
       workbox: {
-        // M-11 replaces this with the real strategies: network-first for Supabase
-        // REST with a cached fallback, stale-while-revalidate for static assets,
-        // and a designed Arabic offline screen.
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
         navigateFallback: '/index.html',
-        cleanupOutdatedCaches: true
+        cleanupOutdatedCaches: true,
+        // M-11 strategies.
+        runtimeCaching: [
+          {
+            // Supabase REST and Storage reads: serve fresh when the network is
+            // there, fall back to the last good response when it is not.
+            //
+            // AUTH IS DELIBERATELY EXCLUDED — see the negative lookahead. Tokens
+            // and session responses must never be written to the Cache API,
+            // where they would outlive sign-out and be readable by anything with
+            // access to the origin's storage. Auth failing loudly offline is the
+            // correct behaviour.
+            urlPattern: /^https:\/\/[a-z0-9]+\.supabase\.co\/(?!auth\/)(rest|storage)\/v1\//,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'supabase-read',
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              // Only 200s. Caching an RLS-denied 4xx would pin an empty result.
+              cacheableResponse: { statuses: [200] }
+            }
+          },
+          {
+            urlPattern: ({ request }) =>
+              ['style', 'script', 'image', 'font'].includes(request.destination),
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-assets',
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 }
+            }
+          }
+        ]
       }
     })
   ],

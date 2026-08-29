@@ -1,0 +1,52 @@
+/* M-11 offline banner and M-12 update prompt.
+
+   APPENDED AFTER the six M-04 files, never merged into them. Those carry the
+   119 original rules byte-identically and in their original cascade order, and
+   scripts/verify-css-parity.mjs fails if anything is inserted or reordered among
+   them. New rules may only be added at the end, where they cannot change how any
+   existing rule resolves.
+
+   Built entirely from existing tokens — no new colours, no new type. The
+   guardrails forbid redesigning the visual language.
+*/
+
+.netbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  display: none;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  /* M-14 will fold this into the global safe-area pass. Present now so the bar
+     never sits under the home indicator on a notched phone. */
+  padding-bottom: calc(12px + var(--safe-bottom, 0px));
+  background: var(--dark);
+  color: #fff5f1;
+  font-size: 12px;
+  line-height: 1.6;
+  border-top: 1px solid var(--line);
+}
+
+.netbar.show {
+  display: flex;
+}
+
+.netbar.update {
+  background: var(--rose);
+}
+
+/* 44pt minimum target, the floor M-14 applies everywhere. */
+.netbar button {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid #fffdf933;
+  border-radius: 12px;
+  background: #fffdf91a;
+  color: inherit;
+  font-weight: 700;
+  font-size: 12px;
+}

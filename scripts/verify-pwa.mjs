@@ -161,6 +161,61 @@ async function main() {
       await page.context().setOffline(false);
     }
     check('the service worker serves the app shell with the network offline', offlineOk, offlineDetail);
+
+    // --- M-11: the offline state is visible, not just non-broken -----------
+    await page.context().setOffline(true);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    const offlineBar = await page
+      .waitForSelector('#netbar.show', { timeout: 10_000 })
+      .then((h) => h.textContent())
+      .catch(() => null);
+    check(
+      'an offline notice is shown, in Arabic (M-11)',
+      !!offlineBar && /[؀-ۿ]/.test(offlineBar),
+      offlineBar?.trim() ?? 'no #netbar.show'
+    );
+    check(
+      'the offline notice does not block the interface',
+      await page.evaluate(() => {
+        const bar = document.querySelector('#netbar');
+        const form = document.querySelector('#authForm');
+        if (!bar || !form) return false;
+        // The bar is pinned to the bottom; the form must still be interactive.
+        return getComputedStyle(bar).position === 'fixed' && !form.hasAttribute('inert');
+      })
+    );
+
+    await page.context().setOffline(false);
+    const cleared = await page
+      .waitForFunction(() => !document.querySelector('#netbar')?.classList.contains('show'), {
+        timeout: 10_000
+      })
+      .then(() => true)
+      .catch(() => false);
+    check('the offline notice clears when the network returns', cleared);
+
+    // --- M-11: auth responses must never be cached -------------------------
+    const swSrc = swSource;
+    check(
+      'Supabase auth is excluded from the runtime cache (M-11)',
+      /\(\?!auth/.test(swSrc),
+      'tokens must never be written to the Cache API'
+    );
+    check(
+      'Supabase reads use NetworkFirst with a cached fallback',
+      /NetworkFirst/.test(swSrc) && /supabase-read/.test(swSrc)
+    );
+    check(
+      'static assets use StaleWhileRevalidate',
+      /StaleWhileRevalidate/.test(swSrc) && /static-assets/.test(swSrc)
+    );
+
+    // --- M-12: a waiting worker must not reload the page underneath --------
+    check(
+      'the app does not auto-reload on update (M-12)',
+      !/self\.skipWaiting\(\)/.test(swSrc) || /messageSkipWaiting|SKIP_WAITING/.test(swSrc),
+      'registerType is prompt; the worker waits for the user'
+    );
   } finally {
     await browser.close();
     server.close();
