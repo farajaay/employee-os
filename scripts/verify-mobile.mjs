@@ -161,6 +161,33 @@ async function main() {
         small.slice(0, 6).join('  |  ')
       );
 
+      // Nothing fixed may cover the navigation. The offline bar and the tab bar
+      // are both pinned to the bottom, and the bar outranks the tabs on z-index,
+      // so at bottom:0 it swallowed taps on every tab — exactly when a person
+      // most needs to move between cached views.
+      if (phone) {
+        await page.context().setOffline(true);
+        await page.evaluate(() => window.dispatchEvent(new Event('offline')));
+        await page.waitForSelector('#netbar.show', { timeout: 10_000 });
+        const covered = await page.evaluate(() => {
+          const blocked = [];
+          for (const tab of document.querySelectorAll('[data-view]')) {
+            const r = tab.getBoundingClientRect();
+            const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+            if (hit && hit !== tab && !tab.contains(hit)) {
+              blocked.push(`${tab.dataset.view} <- ${hit.id ? '#' + hit.id : hit.tagName}`);
+            }
+          }
+          return blocked;
+        });
+        check(
+          `${width}: the offline bar does not cover the tab bar`,
+          covered.length === 0,
+          covered.join(', ') || 'all five tabs remain tappable offline'
+        );
+        await page.context().setOffline(false);
+      }
+
       // Safe-area: on a phone the fixed bar must reserve the inset.
       if (phone) {
         // A headless browser has no notch, so env(safe-area-inset-*) resolves to

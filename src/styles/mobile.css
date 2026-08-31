@@ -86,3 +86,16 @@
 .netbar {
   padding-bottom: calc(12px + var(--safe-bottom, 0px));
 }
+
+@media (max-width: 899px) {
+  /* Sit ABOVE the tab bar, not on top of it.
+     Both are fixed to bottom:0, and .netbar (z-index 900) outranks .side
+     (z-index 80), so at bottom:0 the offline bar covered 44px of the 72px tab
+     bar and elementFromPoint at a tab's centre returned #netbar — going offline
+     silently took the navigation away, which is precisely when a person needs
+     to move around cached views. */
+  .netbar {
+    bottom: calc(72px + var(--safe-bottom, 0px));
+    padding-bottom: 12px;
+  }
+}
