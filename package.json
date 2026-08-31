@@ -19,7 +19,8 @@
     "assets": "npx @capacitor/assets generate --iconBackgroundColor '#fbf7f2'",
     "smoke": "node scripts/smoke.mjs",
     "icons": "node scripts/generate-icons.mjs",
-    "verify:pwa": "node scripts/verify-pwa.mjs"
+    "verify:pwa": "node scripts/verify-pwa.mjs",
+    "verify:mobile": "node scripts/verify-mobile.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

@@ -66,6 +66,40 @@ async function distCss() {
 /** The split files, in the order index.html links them. Order is load-bearing. */
 const SPLIT_ORDER = ['tokens', 'base', 'components', 'layout', 'views', 'responsive'];
 
+/**
+ * Deliberate, recorded changes to an original rule.
+ *
+ * M-04 and M-05 had to change nothing, and this check proved it. Later tickets
+ * legitimately DO change the original CSS — M-13 moves a breakpoint by design.
+ * Rather than weaken the check to "mostly unchanged", every such change is
+ * declared here with its exact before and after. Anything else still fails.
+ *
+ * Adding an entry is a deliberate act that belongs in a commit message and in
+ * docs/programme/DOCUMENT-CONTROL.md, never a quick way to silence a failure.
+ */
+const ALLOWED_DEVIATIONS = [
+  {
+    ticket: 'M-13',
+    why: 'sidebar gives way to bottom tabs below 900px, not 820px',
+    from: '@media(max-width:820px)',
+    to: '@media(max-width:899px)'
+  }
+];
+
+/** Apply the recorded deviations to the original text before comparing. */
+function applyDeviations(css) {
+  let out = css;
+  for (const d of ALLOWED_DEVIATIONS) {
+    if (!out.includes(d.from)) {
+      throw new Error(
+        `Recorded deviation for ${d.ticket} no longer applies: "${d.from}" is not in the original.`
+      );
+    }
+    out = out.replace(d.from, d.to);
+  }
+  return out;
+}
+
 /** Drop comments only — no other normalisation. Used for the byte-exact check. */
 const stripComments = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
 
@@ -88,7 +122,7 @@ async function main() {
   const upstreamHtml = await readFile(UPSTREAM, 'utf8');
   const match = upstreamHtml.match(/<style>([\s\S]*?)<\/style>/);
   if (!match) throw new Error('No <style> block in docs/baseline/index.upstream.html');
-  const originalCss = match[1];
+  const originalCss = applyDeviations(match[1]);
 
   // --- Check A: the split itself. Byte-exact, no tolerance. ----------------
   const parts = await Promise.all(
@@ -121,8 +155,11 @@ async function main() {
   const originalRules = originalRulesExact.map(normalise);
   console.warn(
     `PASS (A) — all ${originalRules.length} rules across the ${SPLIT_ORDER.length} split ` +
-      'files are byte-identical to the original and in its exact order.'
+      'files match the original, in its exact order.'
   );
+  for (const d of ALLOWED_DEVIATIONS) {
+    console.warn(`         with one recorded deviation — ${d.ticket}: ${d.from} -> ${d.to} (${d.why})`);
+  }
 
   // --- Check B: the build preserves that order in what ships. --------------
   const expected = topLevelRules(await minify(originalCss)).map(normalise).filter(Boolean);
