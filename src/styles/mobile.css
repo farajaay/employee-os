@@ -1,0 +1,88 @@
+/* M-14 — safe-area insets and the 44pt minimum target.
+
+   APPENDED after every other stylesheet, so the 119 original rules keep their
+   content and cascade position. Everything here either raises a target to the
+   platform floor or reserves a device inset; nothing restyles anything.
+
+   Measured, not assumed. Before this file, at 390px:
+     #newTaskBtn  71 x 38     #newAchBtn  64 x 36
+     #logoutBtn   47 x 36     .nav button 157 x 42 (desktop)
+   Run `npm run verify:mobile` to re-measure.
+*/
+
+/* ---- 1. Touch targets ------------------------------------------------- */
+
+/* Apple and Android both publish 44pt as the floor. `.btn.small` and the
+   mobile `.btn.primary` sat below it; these raise the box without touching
+   padding, colour or type, so the buttons keep their proportions. */
+.btn.small,
+.topActions .btn.primary,
+.btn.primary.small {
+  min-height: 44px;
+}
+
+/* The sidebar tabs measured 42px at desktop widths — two pixels short. At the
+   phone breakpoint they are already 72px tall and are left alone. */
+.nav button {
+  min-height: 44px;
+}
+
+/* The task checkbox is the most-tapped control in the app and renders at
+   28 x 28. Growing the box would reflow the task grid, whose first column is
+   32px, and the guardrails forbid redesigning the layout — so the HIT AREA is
+   extended to 44 x 44 with a transparent overlay while the visible box stays
+   exactly as designed. */
+.check {
+  position: relative;
+}
+
+.check::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  /* Purely a target. Never paints, never affects layout. */
+  background: transparent;
+}
+
+/* ---- 2. Safe-area insets ---------------------------------------------- */
+
+/* Every fixed or sticky element must reserve the device inset, or it sits under
+   the notch, the home indicator or a rounded corner. `viewport-fit=cover` is
+   already set in index.html, which is what makes env() resolve to real values
+   on a device; on a browser without insets these all evaluate to 0 and nothing
+   moves. */
+
+@media (max-width: 899px) {
+  /* The bottom tab bar sits directly over the home indicator. */
+  .side {
+    height: calc(72px + var(--safe-bottom, 0px));
+    padding-bottom: var(--safe-bottom, 0px);
+  }
+
+  /* The sticky header sits under the notch and the status bar. */
+  .top {
+    padding-top: calc(12px + var(--safe-top, 0px));
+  }
+
+  /* Landscape on a notched phone insets the sides too. */
+  .main {
+    padding-left: calc(14px + var(--safe-left, 0px));
+    padding-right: calc(14px + var(--safe-right, 0px));
+    /* Clear the tab bar, which grew by the bottom inset. */
+    padding-bottom: calc(92px + var(--safe-bottom, 0px));
+  }
+
+  /* Modals are fixed too, and their close buttons must stay reachable. */
+  .modal {
+    padding-bottom: calc(18px + var(--safe-bottom, 0px));
+  }
+}
+
+/* The offline / update bar is fixed at the bottom on every width. */
+.netbar {
+  padding-bottom: calc(12px + var(--safe-bottom, 0px));
+}

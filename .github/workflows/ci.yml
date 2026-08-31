@@ -54,6 +54,11 @@ jobs:
       - name: PWA installability (M-10)
         run: npm run verify:pwa
 
+      # M-13 / M-14: bottom tabs below 900px, no horizontal scroll, every visible
+      # target at or above 44px, and safe-area insets declared on fixed elements.
+      - name: Mobile layout (M-13, M-14)
+        run: npm run verify:mobile
+
       - name: No secrets in the bundle
         run: |
           if grep -rIlE 'service_role|sb_secret|SUPABASE_SERVICE_ROLE|BEGIN [A-Z ]*PRIVATE KEY' dist; then
