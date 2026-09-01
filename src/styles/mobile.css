@@ -99,3 +99,29 @@
     padding-bottom: 12px;
   }
 }
+
+/* ---- 3. RTL spacing in the sidebar (M-15) ------------------------------ */
+
+/* `.nav button span` carries the step number and spaces itself with a PHYSICAL
+   `margin-left`. Inside an RTL container the bidi algorithm reorders an Arabic
+   label and a Latin one differently, so that single margin lands between the
+   number and the word for اليوم / المشاريع but outside it for Workflow, Event
+   Radar and Career — which rendered as "03Workflow" with no gap at all.
+
+   Laying the button out with flex and `gap` spaces the two items by position
+   rather than by side, so it is correct whichever script the label is in.
+   Only the sidebar is affected; below 900px the number sits above the label in
+   its own row and is already correct. */
+
+@media (min-width: 900px) {
+  .nav button {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .nav button span {
+    margin-left: 0;
+  }
+}
