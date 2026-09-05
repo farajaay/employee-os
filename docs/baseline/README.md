@@ -21,31 +21,35 @@ diff <(sed 's/Employee OS/Fatimah Work OS/g' index.html) docs/baseline/index.ups
 Silence means the name is the only difference. That check passed at M-00 and should be
 re-run before M-04 and M-05 are declared done.
 
-## Screenshots — M-01 (INCOMPLETE — 3 of 15)
+## Screenshots — M-01 (18 of 18, from the fixture workspace)
 
-The full set is five views at 390 / 768 / 1440 px in Arabic RTL: 15 files. Every
-UI-adjacent ticket is compared against them before it is declared done.
+All five views plus the auth screen, at 390 / 768 / 1440 px in Arabic RTL — 18 files.
+Every UI-adjacent ticket is compared against them before it is declared done.
 
-**Present:** `auth-390.png`, `auth-768.png`, `auth-1440.png` — the login screen, which
-is all that renders without a session.
-
-**Missing:** `{home,projects,workflow,events,career}-{390,768,1440}.png`. The app is
-fully login-gated (`showAuth()` hides `#app` until Supabase returns a session), so the
-five views cannot be reached without credentials.
-
-To finish the set:
-
-```bash
-BASELINE_EMAIL=... BASELINE_PASSWORD=... npm run baseline
+```
+home-390      projects-390    workflow-390    events-390    career-390    auth-390
+home-768      projects-768    workflow-768    events-768    career-768    auth-768
+home-1440     projects-1440   workflow-1440   events-1440   career-1440   auth-1440
 ```
 
-Use a **dedicated demo account** — the same one Apple requires in the M-40 review notes
-— never a personal password. The script reads them from the environment and never
-writes them to disk or into an image. It exits non-zero until all 15 exist.
+---
 
-On a machine whose Chromium predates the pinned Playwright build, add
-`PLAYWRIGHT_CHROMIUM_PATH=/path/to/chrome`.
+## How these were captured
 
-**M-01 is not done until all 15 are committed and the `v0-web-baseline` tag is on the
-remote.** M-04's *Done when* — "no computed style differs from `docs/baseline/`" — is
-unverifiable for the five views until then.
+`npm run baseline` runs in one of two modes:
+
+- **fixtures (default)** — Supabase is answered locally from
+  `tests/fixtures/workspace.mjs`. Realistic Arabic content of realistic length, so
+  RTL wrapping and the 390pt layout are genuinely exercised. No credential, nothing
+  reaches production. Proves the views **render and lay out**.
+- **real backend** — set `BASELINE_EMAIL` and `BASELINE_PASSWORD`. The only mode
+  that proves the queries match the live schema and that RLS returns what is
+  expected.
+
+A fixture capture does not replace the real one. It is what made the work possible
+while the real one was unavailable.
+
+**Reading the phone shots:** they are `fullPage`, and a `position: fixed` element
+renders at the original viewport's position — so the bottom tab bar appears partway
+down a tall page rather than pinned to its foot. That is a screenshot artifact, not
+a layout bug. Fixed-element positioning is measured live by `npm run verify:mobile`.

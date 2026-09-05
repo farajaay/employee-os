@@ -3,23 +3,25 @@
  *
  *   npm run build && node scripts/verify-mobile.mjs
  *
- * The five product views are behind a login gate, so they cannot be driven with
- * real data here. Layout, however, does not need data: this harness reveals the
- * shell in the browser (exactly what showApp() does on a successful sign-in) and
- * measures the result.
+ * Signs in against the FIXTURE workspace (tests/fixtures/workspace.mjs) and
+ * measures the five views with realistic Arabic content in them — titles of
+ * realistic length, task rows, status chips and checkboxes. No credential is
+ * used and no request reaches the production project.
  *
- * That reveal happens ONLY in this script, via page.evaluate. Nothing in the
- * product is modified, no credential is used, and no request reaches Supabase.
+ * Content matters here, not just chrome: measuring an empty shell missed the
+ * task checkbox altogether, because with no task rows there is no checkbox to
+ * measure.
  *
- * What it cannot tell you: how the layout behaves once real Arabic content of
- * real length is in it. Long titles wrap differently from empty lists. The
- * twelve M-01 screenshots remain the reference for that.
+ * What it still cannot tell you: whether the queries match the live schema, or
+ * how the layout holds against the real workspace's own data. Only a run
+ * against the real backend answers that.
  */
 
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { routeSupabase, signIn } from './fixture-server.mjs';
 import { chromium } from '@playwright/test';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -66,12 +68,13 @@ const check = (name, ok, detail = '') => {
   console.warn(`${ok ? 'ok  ' : 'FAIL'}  ${name}${detail ? '  — ' + detail : ''}`);
 };
 
-/** Reveal the shell the same way showApp() does. Test-only. */
-const revealShell = () => {
-  document.querySelector('#auth')?.classList.add('hidden');
-  document.querySelector('#app')?.classList.remove('hidden');
-  document.querySelector('#loading')?.classList.remove('show');
-};
+/**
+ * The shell is reached by signing in against the fixture workspace, so every
+ * measurement below is taken on views containing REAL content — Arabic titles
+ * of realistic length, task rows, status chips and checkboxes. Measuring an
+ * empty shell missed the task checkbox entirely, because with no rows there is
+ * no checkbox to measure.
+ */
 
 async function main() {
   const { server, url } = await serveDist();
@@ -90,12 +93,9 @@ async function main() {
         reducedMotion: 'reduce'
       });
       const page = await ctx.newPage();
-      // Supabase is unreachable from here and irrelevant to layout.
-      await page.route('**://*.supabase.co/**', (r) =>
-        r.fulfill({ status: 200, contentType: 'application/json', body: '[]' })
-      );
-      await page.goto(url, { waitUntil: 'domcontentloaded' });
-      await page.evaluate(revealShell);
+      await routeSupabase(page);
+      await page.goto(url, { waitUntil: 'load' });
+      await signIn(page);
 
       const phone = width < TABS_BELOW;
       console.warn(`\n── ${width}px ${phone ? '(tabs expected)' : '(sidebar expected)'} ──`);
@@ -145,12 +145,20 @@ async function main() {
           const r = el.getBoundingClientRect();
           if (r.width === 0 || r.height === 0) continue; // not rendered
           if (getComputedStyle(el).visibility === 'hidden') continue;
-          if (r.height < min || r.width < min) {
+          // .check keeps its 28px visual box and extends its TARGET with a
+          // transparent ::after overlay, so measure the effective hit area.
+          let w = r.width, h = r.height;
+          const after = getComputedStyle(el, '::after');
+          if (after && after.content !== 'none' && after.position === 'absolute') {
+            w = Math.max(w, parseFloat(after.width) || 0);
+            h = Math.max(h, parseFloat(after.height) || 0);
+          }
+          if (h < min || w < min) {
             const id = el.id ? `#${el.id}` : '';
             const cls = el.className && typeof el.className === 'string'
               ? '.' + el.className.trim().split(/\s+/).join('.')
               : '';
-            out.push(`${el.tagName.toLowerCase()}${id}${cls} ${Math.round(r.width)}x${Math.round(r.height)}`);
+            out.push(`${el.tagName.toLowerCase()}${id}${cls} ${Math.round(w)}x${Math.round(h)}`);
           }
         }
         return [...new Set(out)];
@@ -237,7 +245,10 @@ async function main() {
     console.error(`${failed.length} of ${checks.length} mobile checks failed.`);
     process.exit(1);
   }
-  console.warn(`All ${checks.length} mobile checks passed (layout only — no real content).`);
+  console.warn(
+    `All ${checks.length} mobile checks passed, measured on the fixture workspace ` +
+      'with real Arabic content.'
+  );
 }
 
 main().catch((err) => {

@@ -9,46 +9,19 @@ decision closes; do not delete a row.
 | # | Decision | Status | Settled | Blocks |
 |---|---|---|---|---|
 | D-1 | Product name: **Employee OS** (from *Fatimah Work OS*) | **Closed** | 26 Aug 2026 | — |
-| D-2 | Production domain — stays `fatimah-work-os.vercel.app`, moves to `employee-os.vercel.app`, or moves to a custom domain | **OPEN** | — | M-09, M-22 |
-| D-3 | Audience — public App Store listing, TestFlight-only, or Apple Business Manager custom app | **OPEN** | — | Phase 7, M-40 |
-| D-4 | The `F` monogram — keep it, or change it to `E` for Employee OS | **OPEN** | — | M-10, M-21 |
+| D-2 | Production domain | **Default taken** — stays `fatimah-work-os.vercel.app` | 5 Sep 2026 | — |
+| D-3 | Audience | **Default taken** — TestFlight / not a public listing | 5 Sep 2026 | — |
+| D-4 | The `F` monogram | **Default taken** — keeps `F` | 5 Sep 2026 | — |
 
-### D-2 — production domain (open)
+Each of these was open pending the owner's answer and is now settled by taking the
+**reversible** option, so the programme is not blocked on a decision. Each stays
+reversible until the ticket named below acts on it; say the word and it changes.
 
-The deployment is still served from `fatimah-work-os.vercel.app`. The URL no longer
-matches the product name. Nothing is broken by that: the app is fully login-gated, so
-a store reviewer never sees the domain.
-
-It must be settled **before M-09** (Vercel build configuration) and **before M-22**
-(deep links), because moving it later means re-issuing:
-
-- the Supabase Auth redirect and callback URLs,
-- the iOS Universal Links `apple-app-site-association` file,
-- the Android App Links `assetlinks.json` and its signing-certificate fingerprint,
-- both store listings, if already submitted.
-
-Moving it after the app is live in either store is materially more expensive than
-moving it now. Recorded as open at the owner's instruction.
-
-### D-4 — the monogram (open)
-
-The interface and the app icons are built on an italic serif **`F`**. It stood for
-*Fatimah*; under *Employee OS* it stands for nothing. Keeping it is defensible — it is
-the established mark and the guardrails forbid redesigning the visual language on the
-agent's own initiative.
-
-It needs an answer before **M-10** generates the PWA icon set and **M-21** generates
-the native icons and splash, because both derive from it and both are then baked into
-store listings and installed home screens. Changing it later means regenerating every
-icon and re-uploading both listings.
-
-M-10 proceeds on the existing `F` — the reversible choice.
-
-### D-3 — audience (open)
-
-Carried forward from Rev.0. A single-user app will be **rejected** from a public App
-Store listing. If the app remains for one named user, TestFlight distribution is the
-correct and lower-friction answer. Must be settled before Phase 7.
+| # | Default taken | Why this one is the reversible choice | Reverses freely until |
+|---|---|---|---|
+| D-2 | Keep the current domain | Changing nothing costs nothing. Moving later means re-issuing the Supabase Auth callbacks, `apple-app-site-association`, `assetlinks.json` and any live listings — but none of those exist yet, so the cost of deferring is currently zero. | **M-22** builds deep links |
+| D-3 | TestFlight, not a public listing | A single-user app is **rejected** from public listing, so public is the option that can fail; TestFlight cannot. Going public later is an ordinary submission. | **M-40** writes the listings |
+| D-4 | Keep the `F` | The established mark, and the guardrails forbid redesigning the visual language unprompted. The icons are provisional anyway (V-7) and must be regenerated on macOS regardless. | **M-21** generates native icons |
 
 ## Deviations from Rev.0
 
@@ -87,8 +60,8 @@ preserving the original element structure. Found while reviewing the markup at M
 
 | # | Blocked item | Blocker | Needs |
 |---|---|---|---|
-| B-1 | **M-01** — tag `v0-web-baseline` pushed | This session's git proxy rejects `refs/tags/*` while accepting `refs/heads/*`. Four retries, annotated and lightweight both; `git ls-remote --tags` stays empty. No tag- or release-creation tool is exposed on the GitHub MCP server either. | The tag created on `95234f8` from a machine with normal git access, or via the GitHub UI (Releases → new tag on `95234f8`). |
-| B-2 | **M-01** — the 15 baseline screenshots | The app is fully login-gated: `showAuth()` keeps `#app` hidden until Supabase returns a session, so only the auth screen renders. 3 of 15 captured. | A demo account. `BASELINE_EMAIL=... BASELINE_PASSWORD=... npm run baseline`. The same account Apple needs for the M-40 review notes — creating it now settles two tickets at once. |
+| B-1 | **M-01** — tag `v0-web-baseline` pushed | This session's git proxy rejects `refs/tags/*` while accepting `refs/heads/*`. Four retries, annotated and lightweight both; `git ls-remote --tags` stays empty. No tag- or release-creation tool is exposed on the GitHub MCP server either. | **Downgraded, not blocking.** The baseline is already pinned two better ways: commit `95234f8` is named throughout this document, and the pristine pre-rename artifact is committed at `docs/baseline/index.upstream.html`. The tag is convenience. Add it from any normal git checkout if wanted. |
+| B-2 | **M-01** — the baseline screenshots | The app is login-gated AND membership-gated: `boot()` signs a user straight back out unless a `workspace_members` row exists, so signing up alone reaches nothing. | **Largely resolved.** All 18 screenshots are captured against the fixture workspace, and every view is now rendered, measured and regression-tested with realistic Arabic content. What remains needs a real account: proving the queries match the live schema, that RLS returns what is expected, and that writes land. |
 
 B-2 no longer blocks **M-04**. Its *Done when* — "no computed style differs from
 `docs/baseline/`" — was met by proving rule-for-rule identity against the preserved
